@@ -161,7 +161,7 @@ class BatPF(Optimizer):
 import pandas as pd
 
 # Import Dataset
-dataset = pd.read_csv('Cycle n Capacity.csv')
+dataset = pd.read_csv('../CSVs/Cycle n Capacity.csv')
 X=dataset.iloc[:,0:1].values
 y=dataset.iloc[:,1].values
 
@@ -178,10 +178,10 @@ from keras.layers import Dense
 regressor = Sequential()
 
 # Adding the input layer and first hidden layer
-regressor.add(Dense(output_dim=2 ,init = 'uniform',activation = 'tanh',input_dim = 1))
+regressor.add(Dense(2 ,init = 'uniform',activation = 'tanh',input_dim = 1))
 
 # Adding the output layer
-regressor.add(Dense(output_dim = 1,init = 'uniform',activation = 'linear'))
+regressor.add(Dense(1,init = 'uniform',activation = 'linear'))
 
 # Compiling the ANN
 regressor.compile(optimizer = BatPF(), loss = 'mean_squared_error', metrics= ['mean_absolute_error','accuracy'])

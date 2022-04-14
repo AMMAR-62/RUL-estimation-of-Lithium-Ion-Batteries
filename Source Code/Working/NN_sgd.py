@@ -11,11 +11,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import Dataset
-dataset = pd.read_csv('training_data.csv')
+dataset = pd.read_csv('./CSVs/training_data.csv')
 X_train=dataset.iloc[:,0:1].values
 y_train=dataset.iloc[:,5].values
 
-test_data = pd.read_csv('testing_data.csv')
+test_data = pd.read_csv('./CSVs/testing_data.csv')
 X_005=test_data.iloc[:,0:1].values
 y_005=test_data.iloc[:,5].values
 
@@ -32,31 +32,31 @@ from keras.layers import Dense
 regressor = Sequential()
 
 # Adding the input layer and first hidden layer
-regressor.add(Dense(output_dim=2 ,init = 'uniform',activation = 'tanh',input_dim = 1))
+regressor.add(Dense(2 ,kernel_initializer = 'uniform',activation = 'tanh',input_dim = 1))
 
 # Adding the output layer
-regressor.add(Dense(output_dim = 1,init = 'uniform',activation = 'linear'))
+regressor.add(Dense(1,kernel_initializer = 'uniform',activation = 'linear'))
 
 # Compiling the ANN
 regressor.compile(optimizer = 'sgd', loss = 'mean_squared_error', metrics= ['mean_absolute_error','accuracy'])
 
 # Fitting the ANN in the Training set
-regressor.fit(X_train, y_train, batch_size = 1,nb_epoch = 2000)
+regressor.fit(X_train, y_train, batch_size = 1, epochs = 20)
 # Predicting the Test set result
 y_pred = regressor.predict(X_005)
 
 
 t=[40]
-y_pred = regressor.predict(t)
+y_rul = regressor.predict(t)
 
 t[0]+=1
-y_pred = regressor.predict(t)
-print(t)
+y_rul = regressor.predict(t)
+print(y_rul)
 
 
 while(t[0]<165 and y_pred[0][0]>1.3):
     t[0]+=1
-    y_pred = regressor.predict(t)
+    y_rul = regressor.predict(t)
     
 rul= t[0]  - 40  
 weights = regressor.layers[0].get_weights()[0]
