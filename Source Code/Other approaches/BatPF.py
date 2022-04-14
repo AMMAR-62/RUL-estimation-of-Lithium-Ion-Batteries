@@ -5,9 +5,11 @@ Created on Sat Apr  4 12:04:25 2020
 @author: user
 """
 
+from lib2to3.pgen2.token import OP
 import math
-from keras.optimizers import Optimizer
-from keras import backend as K
+from tensorflow.python.keras.optimizer_v2.optimizer_v2 import OptimizerV2
+from tensorflow.python.keras.optimizer_v2 import learning_rate_schedule
+from tensorflow.python.keras import backend as K
 import numpy as np
 import random
 
@@ -18,10 +20,10 @@ if K.backend() == 'tensorflow':
 from scipy.stats import chi2 
 from numpy.linalg import norm 
 
-class BatPF(Optimizer):
+class BatPF(OptimizerV2):
     def __init__(self,D=7,NP=50,**kwargs):
         
-        super(BatPF,self).__init__(**kwargs)
+        super(BatPF,self).__init__(name= self.__class__.__name__,**kwargs)
         with K.name_scope(self.__class__.__name__):
             self.D=D
             self.NP=NP
@@ -41,9 +43,9 @@ class BatPF(Optimizer):
             self.f_min=0.0
             self.fmin = 0.0
             self.fmax = 2.0
-            
+            self.updates= []
     
-    def get_updates(self,loss,params):
+    def _resource_apply_dense(self,loss,params):
         
         self.k+=1
         def state_transistion(x,k):
@@ -136,9 +138,9 @@ class BatPF(Optimizer):
         #get x*
         #eq 10 (chi2pdf)
         i=0
-        for p in params:
-            new_p=p*K.constant([chi2.pdf(norm(self.z_obs[i]-self.best[i]),2)])
-            self.updates.append(K.update(p,new_p))
+        for p in range(params.shape[0]):
+            new_p=params[p]*K.constant([chi2.pdf(norm(self.z_obs[i]-self.best[i]),2)])
+            self.updates.append(K.update(params[p],new_p))
             i+=1
             
 
@@ -161,7 +163,7 @@ class BatPF(Optimizer):
 import pandas as pd
 
 # Import Dataset
-dataset = pd.read_csv('../CSVs/Cycle n Capacity.csv')
+dataset = pd.read_csv('./CSVs/Input n Capacity.csv')
 X=dataset.iloc[:,0:1].values
 y=dataset.iloc[:,1].values
 
@@ -170,24 +172,24 @@ from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=True)
 
 # Import keras libraries and packages
-import keras
-from keras.models import Sequential
-from keras.layers import Dense
+import tensorflow.python.keras
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.layers import Dense
 
 # Initializing the ANN
 regressor = Sequential()
 
 # Adding the input layer and first hidden layer
-regressor.add(Dense(2 ,init = 'uniform',activation = 'tanh',input_dim = 1))
+regressor.add(Dense(2 ,kernel_initializer = 'uniform',activation = 'tanh',input_dim = 1))
 
 # Adding the output layer
-regressor.add(Dense(1,init = 'uniform',activation = 'linear'))
+regressor.add(Dense(1,kernel_initializer = 'uniform',activation = 'linear'))
 
 # Compiling the ANN
 regressor.compile(optimizer = BatPF(), loss = 'mean_squared_error', metrics= ['mean_absolute_error','accuracy'])
 
 # Fitting the ANN in the Training set
-regressor.fit(X_train, y_train, batch_size = 1,nb_epoch = 1000)
+regressor.fit(X_train, y_train, batch_size = 1,epochs = 1000)
 # Predicting the Test set result
 y_pred = regressor.predict(X_test)
 
