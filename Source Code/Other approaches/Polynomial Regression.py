@@ -17,7 +17,7 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import r2_score
 
 # Importing the dataset
-dataset = pd.read_csv('../../CSVs/Input n Capacity.csv')
+dataset = pd.read_csv('CSVs//Input n Capacity.csv')
 X = dataset.iloc[:, 0:5].values
 y = dataset.iloc[:, 5].values
 
@@ -47,6 +47,13 @@ for train_index,test_index in skf.split(dataset, y):
     testtot += testscore
     fold_no += 1
 
+    plt.scatter(Xtrain.iloc[:,0], Ytrain, color = 'red')
+    plt.plot(Xtest.iloc[:, 0], lin_reg.predict(Xtest), color = 'blue')
+    plt.title('Truth or Bluff (Linear Regression)')
+    plt.xlabel('Cycle')
+    plt.ylabel('Capacity')
+    plt.show()
+
     print("Linear Regression\n")
     print('Fold no',fold_no,'\n')
     print('Number of training examples',len(train.index),'\n')
@@ -56,7 +63,6 @@ for train_index,test_index in skf.split(dataset, y):
     print('Testing accuracy:', testscore)
    
 print('Average training accuracy:', traintot/fold_no)
-
 print('Average testing accuracy:', testtot/fold_no)
 
 skf = KFold(n_splits=5, shuffle=True)
@@ -73,20 +79,30 @@ for train_index,test_index in skf.split(dataset, y):
     Xtest = test.drop(["Capacity(Ah)","SampleId"],axis=1)
     Ytest = test["Capacity(Ah)"]
 
+    print("coming here: 81")
+
+    
     poly_reg = PolynomialFeatures(degree = 10)
     X_poly = poly_reg.fit_transform(Xtrain)
     poly_reg.fit(X_poly, Ytrain)
     lin_reg_2 = LinearRegression()
     lin_reg_2.fit(X_poly, Ytrain)
- 
+    print("coming here: 87")
     ytrain_pred = lin_reg_2.predict(poly_reg.fit_transform(Xtrain))
     trainscore = r2_score(Ytrain, ytrain_pred)
     ytest_pred = lin_reg_2.predict(poly_reg.fit_transform(Xtest))
     testscore = r2_score(Ytest, ytest_pred)
-
+    print("coming here: 92")
     traintot += trainscore
     testtot += testscore
     fold_no += 1
+
+    plt.scatter(Xtrain.iloc[:,0], Ytrain, color = 'red')
+    plt.plot(Xtest.iloc[:, 0], lin_reg.predict(Xtest), color = 'blue')
+    plt.title('Truth or Bluff (Linear Regression)')
+    plt.xlabel('Cycle')
+    plt.ylabel('Capacity')
+    plt.show()
 
     print("Polynomial Regression\n")
     print('Fold no',fold_no,'\n')

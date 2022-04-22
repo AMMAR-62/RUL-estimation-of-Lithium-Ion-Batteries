@@ -43,7 +43,7 @@ regressor.add(Dense(1,kernel_initializer = 'uniform',activation = 'linear'))
 regressor.compile(optimizer = 'sgd', loss = 'mean_squared_error', metrics= ['mean_absolute_error', 'accuracy'])
 
 # Fitting the ANN in the Training set
-regressor.fit(X_train, y_train, batch_size = 1,epochs = 2)
+history = regressor.fit(X_train, y_train, batch_size = 1,epochs = 200)
 # Predicting the Test set result
 y_pred = regressor.predict(X_005)
 

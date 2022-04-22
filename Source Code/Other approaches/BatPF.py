@@ -7,8 +7,7 @@ Created on Sat Apr  4 12:04:25 2020
 
 from lib2to3.pgen2.token import OP
 import math
-from tensorflow.python.keras.optimizer_v2.optimizer_v2 import OptimizerV2
-from tensorflow.python.keras.optimizer_v2 import learning_rate_schedule
+from tensorflow.python.keras.optimizers import Optimizer
 from tensorflow.python.keras import backend as K
 import numpy as np
 import random
@@ -20,10 +19,10 @@ if K.backend() == 'tensorflow':
 from scipy.stats import chi2 
 from numpy.linalg import norm 
 
-class BatPF(OptimizerV2):
+class BatPF(Optimizer):
     def __init__(self,D=7,NP=50,**kwargs):
         
-        super(BatPF,self).__init__(name= self.__class__.__name__,**kwargs)
+        super(BatPF,self).__init__(**kwargs)
         with K.name_scope(self.__class__.__name__):
             self.D=D
             self.NP=NP
